@@ -218,8 +218,5 @@ python tabu_search.py 20 1000 arquivo debug
 1. **Gendreau, M., & Potvin, J. Y.** (2010). *Handbook of metaheuristics* (Vol. 2). Springer.
 2. **Kochenberger, G., et al.** (2014). The unconstrained binary quadratic programming problem: a survey. *Journal of Combinatorial Optimization*, 28(1), 58-81.
 
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
-
+---
 **Desenvolvido como parte do curso MO824/MC859 - Tópicos em Otimização Combinatória do Instituto de Computação da UNICAMP**

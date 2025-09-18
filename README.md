@@ -69,11 +69,6 @@ O problema MAX-QBF é **NP-difícil**, tornando as metaheurísticas uma abordage
 - Python 3.7 ou superior
 - Não requer bibliotecas externas (usa apenas bibliotecas padrão)
 
-### Clone o repositório
-```bash
-git clone https://github.com/seu-usuario/tabu-search-qbf.git
-cd tabu-search-qbf
-```
 
 ## 🚀 Como Usar
 
@@ -90,13 +85,13 @@ python tabu_search.py <tenure> <iterations> <arquivo_instancia> debug
 ### Exemplos de Comando
 ```bash
 # Execução padrão
-python tabu_search.py 20 1000 instances/qbf200
+python tabu_search.py 20 1000 instances/qbf/qbf200
 
 # Modo debug
-python tabu_search.py 20 1000 instances/qbf200 debug
+python tabu_search.py 20 1000 instances/qbf/qbf200 debug
 
 # Instância menor para testes
-python tabu_search.py 10 500 instances/qbf060 debug
+python tabu_search.py 10 500 instances/qbf/qbf060 debug
 ```
 
 ## 📄 Formato das Instâncias
@@ -132,7 +127,7 @@ aₙₙ
 
 ### Exemplo 1: Execução Básica
 ```bash
-$ python tabu_search.py 20 1000 instances/qbf060
+$ python tabu_search.py 20 1000 instances/qbf/qbf060
 
 (Iter. 15) BestSol = Solution: cost=[-245.0], size=[18], elements=[0, 1, 2, ...]
 (Iter. 23) BestSol = Solution: cost=[-198.0], size=[15], elements=[1, 3, 5, ...]
@@ -142,13 +137,13 @@ Time = 2.341 seg
 
 ### Exemplo 2: Modo Debug
 ```bash
-$ python tabu_search.py 20 1000 instances/qbf060 debug
+$ python tabu_search.py 20 1000 instances/qbf/qbf060 debug
 
 === MODO DEBUG ===
-Arquivo: instances/qbf060
+Arquivo: instances/qbf/qbf060
 Tenure: 20
 Iterations: 1000
-Tentando ler arquivo: instances/qbf060
+Tentando ler arquivo: instances/qbf/qbf060
 Arquivo lido: 61 linhas
 Dimensão da matriz: 60
 Matriz inicializada com zeros
@@ -216,9 +211,9 @@ tabu_search.py
 **Solução**: Verifique o caminho do arquivo
 ```bash
 # Windows
-python tabu_search.py 20 1000 instances\qbf200
+python tabu_search.py 20 1000 instances\qbf\qbf200
 # Linux/Mac
-python tabu_search.py 20 1000 instances/qbf200
+python tabu_search.py 20 1000 instances/qbf/qbf200
 ```
 
 ### Problema: "Matriz não inicializada"
@@ -239,24 +234,6 @@ python tabu_search.py 20 1000 arquivo debug
 - Use instâncias menores para teste
 - Verifique se não está em modo debug
 
-## 🤝 Contribuição
-
-Contribuições são bem-vindas! Para contribuir:
-
-1. Fork o projeto
-2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
-3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
-4. Push para a branch (`git push origin feature/AmazingFeature`)
-5. Abra um Pull Request
-
-### Áreas para Contribuição:
-- Implementação de estratégias tabu alternativas
-- Otimizações de performance
-- Melhorias na interface
-- Documentação adicional
-- Testes unitários
-
-## 📚 Referências
 
 1. **Gendreau, M., & Potvin, J. Y.** (2010). *Handbook of metaheuristics* (Vol. 2). Springer.
 2. **Kochenberger, G., et al.** (2014). The unconstrained binary quadratic programming problem: a survey. *Journal of Combinatorial Optimization*, 28(1), 58-81.
@@ -265,10 +242,5 @@ Contribuições são bem-vindas! Para contribuir:
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
----
-
-## 📞 Contato
-
-Para dúvidas ou sugestões, abra uma [issue](https://github.com/seu-usuario/tabu-search-qbf/issues) no repositório.
-
 **Desenvolvido como parte do curso MO824/MC859 - Tópicos em Otimização Combinatória**
+**Instituto de Computação da UNICAMP**

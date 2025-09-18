@@ -35,7 +35,7 @@ Este projeto implementa o algoritmo **Tabu Search** para resolver o problema MAX
 Uma **Função Binária Quadrática (QBF)** é definida como:
 
 ```
-f(x) = x^T · A · x = Σᵢ Σⱼ aᵢⱼ · xᵢ · xⱼ
+$$f(x) = x^T · A · x = Σᵢ Σⱼ aᵢⱼ · xᵢ · xⱼ$$
 ```
 
 Onde:

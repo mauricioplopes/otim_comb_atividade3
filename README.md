@@ -2,21 +2,6 @@
 
 Este repositório contém uma implementação em Python do algoritmo **Tabu Search** para resolver o problema de maximização de uma **Função Binária Quadrática (QBF)**. O código foi convertido de uma implementação original em Java, mantendo todas as funcionalidades e estruturas do algoritmo original.
 
-## 📋 Índice
-
-- [Sobre o Projeto](#sobre-o-projeto)
-- [Problema QBF](#problema-qbf)
-- [Características da Implementação](#características-da-implementação)
-- [Instalação](#instalação)
-- [Como Usar](#como-usar)
-- [Formato das Instâncias](#formato-das-instâncias)
-- [Exemplos](#exemplos)
-- [Parâmetros](#parâmetros)
-- [Estrutura do Código](#estrutura-do-código)
-- [Resultados Esperados](#resultados-esperados)
-- [Troubleshooting](#troubleshooting)
-- [Contribuição](#contribuição)
-
 ## 🎯 Sobre o Projeto
 
 Este projeto implementa o algoritmo **Tabu Search** para resolver o problema MAX-QBF (Maximização de Função Binária Quadrática). O Tabu Search é uma metaheurística que utiliza uma lista de movimentos proibidos (tabu) para evitar ciclagem e explorar eficientemente o espaço de soluções.
@@ -200,11 +185,6 @@ tabu_search.py
 - **elements**: Índices das variáveis selecionadas
 - **Time**: Tempo de execução em segundos
 
-### Interpretação:
-- Custos aparecem **negativos** devido ao uso de QBFInverse
-- Para obter o valor real da maximização: `valor_real = -cost`
-- Soluções maiores não necessariamente são melhores
-
 ## 🔍 Troubleshooting
 
 ### Problema: "Arquivo não encontrado"
@@ -242,5 +222,4 @@ python tabu_search.py 20 1000 arquivo debug
 
 Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
-**Desenvolvido como parte do curso MO824/MC859 - Tópicos em Otimização Combinatória**
-**Instituto de Computação da UNICAMP**
+**Desenvolvido como parte do curso MO824/MC859 - Tópicos em Otimização Combinatória do Instituto de Computação da UNICAMP**

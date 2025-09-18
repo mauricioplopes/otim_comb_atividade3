@@ -1,519 +1,274 @@
-# QBF Tabu Search Framework - Estrutura Modular
+# Tabu Search para Função Binária Quadrática (QBF)
 
-Framework Python para resolução de problemas de maximização de Função Binária Quadrática (QBF) usando metaheurísticas de Busca Tabu, desenvolvido para a disciplina MO824/MC859 - Atividade 3.
+Este repositório contém uma implementação em Python do algoritmo **Tabu Search** para resolver o problema de maximização de uma **Função Binária Quadrática (QBF)**. O código foi convertido de uma implementação original em Java, mantendo todas as funcionalidades e estruturas do algoritmo original.
 
-## 📁 Estrutura do Projeto
+## 📋 Índice
+
+- [Sobre o Projeto](#sobre-o-projeto)
+- [Problema QBF](#problema-qbf)
+- [Características da Implementação](#características-da-implementação)
+- [Instalação](#instalação)
+- [Como Usar](#como-usar)
+- [Formato das Instâncias](#formato-das-instâncias)
+- [Exemplos](#exemplos)
+- [Parâmetros](#parâmetros)
+- [Estrutura do Código](#estrutura-do-código)
+- [Resultados Esperados](#resultados-esperados)
+- [Troubleshooting](#troubleshooting)
+- [Contribuição](#contribuição)
+
+## 🎯 Sobre o Projeto
+
+Este projeto implementa o algoritmo **Tabu Search** para resolver o problema MAX-QBF (Maximização de Função Binária Quadrática). O Tabu Search é uma metaheurística que utiliza uma lista de movimentos proibidos (tabu) para evitar ciclagem e explorar eficientemente o espaço de soluções.
+
+### Características Principais:
+- ✅ Implementação fiel ao código Java original
+- ✅ Heurística construtiva com lista restrita de candidatos (RCL)
+- ✅ Movimentos de vizinhança: inserção, remoção e troca
+- ✅ Lista tabu com critério de aspiração
+- ✅ Avaliação incremental da função objetivo
+- ✅ Modo debug para análise detalhada
+- ✅ Tratamento robusto de erros
+
+## 📊 Problema QBF
+
+Uma **Função Binária Quadrática (QBF)** é definida como:
 
 ```
-qbf_tabu_search/
-├── __init__.py                 # Pacote principal
-├── main.py                     # Interface de linha de comando
-├── requirements.txt            # Dependências Python
-├── README.md                   # Este arquivo
-│
-├── core/                       # Módulos fundamentais
-│   ├── __init__.py
-│   ├── solution.py            # Classe Solution
-│   ├── evaluator.py           # Interface Evaluator
-│   └── abstract_ts.py         # Classe abstrata AbstractTS
-│
-├── problems/                   # Implementações de problemas
-│   ├── __init__.py
-│   └── qbf/                   # Módulo QBF específico
-│       ├── __init__.py
-│       ├── qbf.py            # Classe QBF base
-│       ├── qbf_inverse.py    # Variações da QBF
-│       └── ts_qbf.py         # Busca Tabu para QBF
-│
-├── utils/                      # Utilitários
-│   ├── __init__.py
-│   ├── file_io.py            # Leitura/escrita de arquivos
-│   ├── validation.py         # Validação de instâncias
-│   └── analysis.py           # Análise de instâncias
-│
-├── examples/                   # Exemplos de uso
-│   ├── __init__.py
-│   ├── basic_usage.py        # Uso básico
-│   └── parameter_study.py    # Estudo paramétrico
-│
-├── tests/                      # Testes unitários
-│   ├── __init__.py
-│   ├── test_core.py          # Testes dos módulos core
-│   ├── test_qbf.py           # Testes das classes QBF
-│   └── test_utils.py         # Testes dos utilitários
-│
-└── instances/                  # Instâncias QBF
-    ├── qbf060                 # Instância pequena (60 variáveis)
-    ├── qbf200                 # Instância maior (200 variáveis)
-    └── ...                    # Outras instâncias
+f(x) = x^T · A · x = Σᵢ Σⱼ aᵢⱼ · xᵢ · xⱼ
 ```
 
-## 🚀 Instalação e Configuração
+Onde:
+- `x ∈ {0,1}ⁿ` é um vetor binário
+- `A` é uma matriz n×n de coeficientes reais
+- O objetivo é maximizar f(x)
+
+O problema MAX-QBF é **NP-difícil**, tornando as metaheurísticas uma abordagem apropriada para instâncias de grande porte.
+
+## 🔧 Características da Implementação
+
+### Algoritmo Tabu Search
+- **Heurística Construtiva**: Constrói solução inicial usando estratégia gulosa com RCL
+- **Movimentos de Vizinhança**: 
+  - Inserção de elementos
+  - Remoção de elementos  
+  - Troca de elementos (2-exchange)
+- **Lista Tabu**: Evita movimentos recentes com tenure configurável
+- **Critério de Aspiração**: Permite movimentos tabu se melhoram a melhor solução conhecida
+- **Avaliação Incremental**: Cálculo eficiente do impacto dos movimentos
+
+### Estrutura de Classes
+- `Solution`: Representa uma solução (herda de list)
+- `QBF`: Implementa a função objetivo e operações de avaliação
+- `QBFInverse`: Versão inversa para uso com algoritmo de minimização
+- `TabuSearch`: Implementação principal do algoritmo
+
+## 💻 Instalação
 
 ### Pré-requisitos
+- Python 3.7 ou superior
+- Não requer bibliotecas externas (usa apenas bibliotecas padrão)
 
+### Clone o repositório
 ```bash
-python >= 3.7
-numpy >= 1.19.0
+git clone https://github.com/seu-usuario/tabu-search-qbf.git
+cd tabu-search-qbf
 ```
 
-### Instalação
+## 🚀 Como Usar
 
-1. **Clone/baixe o projeto:**
+### Uso Básico
 ```bash
-git clone <repository-url>
-cd qbf_tabu_search
+python tabu_search.py <tenure> <iterations> <arquivo_instancia>
 ```
 
-2. **Instale dependências:**
+### Modo Debug (Recomendado para primeira execução)
 ```bash
-pip install -r requirements.txt
+python tabu_search.py <tenure> <iterations> <arquivo_instancia> debug
 ```
 
-3. **Verifique a instalação:**
+### Exemplos de Comando
 ```bash
-python -c "import qbf_tabu_search; print('Framework instalado com sucesso!')"
+# Execução padrão
+python tabu_search.py 20 1000 instances/qbf200
+
+# Modo debug
+python tabu_search.py 20 1000 instances/qbf200 debug
+
+# Instância menor para testes
+python tabu_search.py 10 500 instances/qbf060 debug
 ```
 
-## 📖 Uso Básico
+## 📄 Formato das Instâncias
 
-### Interface de Linha de Comando
+O arquivo de instância deve seguir o formato de **matriz triangular superior**:
 
+```
+n
+a₁₁ a₁₂ a₁₃ ... a₁ₙ
+a₂₂ a₂₃ ... a₂ₙ
+a₃₃ ... a₃ₙ
+...
+aₙₙ
+```
+
+**Exemplo** (n=5):
+```
+5
+9 0 -7 -1 -10
+7 -8 2 -4
+3 -9 9
+10 -5
+8
+```
+
+### Características do Formato:
+- Primeira linha: dimensão da matriz (n)
+- Próximas n linhas: elementos da matriz triangular superior
+- Linha i contém (n-i+1) elementos: aᵢᵢ, aᵢ₍ᵢ₊₁₎, ..., aᵢₙ
+- Elementos abaixo da diagonal são assumidos como zero
+
+## 📝 Exemplos
+
+### Exemplo 1: Execução Básica
 ```bash
-# Execução básica
-python main.py --instance instances/qbf060 --tenure 20 --iterations 1000
+$ python tabu_search.py 20 1000 instances/qbf060
 
-# Busca Tabu avançada
-python main.py --instance instances/qbf200 --enhanced --best-improvement --diversification
-
-# Processamento em lote
-python main.py --batch instances/ --output results/batch_results.csv
-
-# Análise de instância
-python main.py --analyze --instance instances/qbf060
+(Iter. 15) BestSol = Solution: cost=[-245.0], size=[18], elements=[0, 1, 2, ...]
+(Iter. 23) BestSol = Solution: cost=[-198.0], size=[15], elements=[1, 3, 5, ...]
+maxVal = Solution: cost=[-156.0], size=[12], elements=[2, 4, 6, 8, 10, 12]
+Time = 2.341 seg
 ```
 
-### Uso Programático
-
-```python
-# Importação básica
-from qbf_tabu_search import TS_QBF, TabuSearchConfig
-
-# Configuração simples
-ts = TS_QBF(tenure=20, iterations=1000, filename="instances/qbf060")
-best_solution = ts.solve()
-print(f"Melhor solução: {best_solution}")
-
-# Configuração avançada
-from qbf_tabu_search.problems.qbf.ts_qbf import TS_QBF_Enhanced
-from qbf_tabu_search.core.abstract_ts import TabuSearchConfig
-
-config = TabuSearchConfig(
-    tenure=25,
-    iterations=2000,
-    seed=42,
-    verbose=True,
-    diversification_enabled=True,
-    intensification_enabled=True
-)
-
-ts_enhanced = TS_QBF_Enhanced(config, "instances/qbf200")
-ts_enhanced.set_search_strategy(best_improvement=True)
-best_solution = ts_enhanced.solve()
-```
-
-## 🧩 Módulos Principais
-
-### Core (`core/`)
-
-**`solution.py`** - Classe Solution
-```python
-from qbf_tabu_search.core.solution import Solution
-
-sol = Solution()
-sol.add(5)
-sol.add(10)
-print(f"Solução tem {sol.size()} elementos: {sol.get_elements()}")
-```
-
-**`evaluator.py`** - Interface para avaliadores
-```python
-from qbf_tabu_search.core.evaluator import Evaluator
-
-# Implementar avaliador customizado
-class MyEvaluator(Evaluator):
-    def evaluate(self, solution):
-        # Implementar lógica de avaliação
-        pass
-```
-
-**`abstract_ts.py`** - Framework de Busca Tabu
-```python
-from qbf_tabu_search.core.abstract_ts import AbstractTS
-
-# Implementar Busca Tabu customizada
-class MyTabuSearch(AbstractTS):
-    def neighborhood_move(self):
-        # Implementar movimento de vizinhança
-        pass
-```
-
-### Problems (`problems/qbf/`)
-
-**`qbf.py`** - Avaliador QBF base
-```python
-from qbf_tabu_search.problems.qbf.qbf import QBF
-
-qbf = QBF("instances/qbf060")
-print(f"Tamanho do domínio: {qbf.get_domain_size()}")
-
-# Avaliar solução
-solution = Solution()
-solution.add(0)
-solution.add(5)
-cost = qbf.evaluate(solution)
-```
-
-**`qbf_inverse.py`** - Variações da QBF
-```python
-from qbf_tabu_search.problems.qbf.qbf_inverse import QBF_Inverse, QBF_Scaled
-
-# QBF invertida (para minimização)
-qbf_inv = QBF_Inverse("instances/qbf060")
-
-# QBF com escala
-qbf_scaled = QBF_Scaled("instances/qbf060", scale_factor=2.0)
-```
-
-**`ts_qbf.py`** - Busca Tabu para QBF
-```python
-from qbf_tabu_search.problems.qbf.ts_qbf import TS_QBF, TS_QBF_Enhanced
-
-# Busca Tabu básica
-ts_basic = TS_QBF(tenure=20, iterations=1000, filename="instances/qbf060")
-
-# Busca Tabu avançada
-ts_advanced = TS_QBF_Enhanced(config, "instances/qbf060")
-ts_advanced.set_search_strategy(best_improvement=True)
-```
-
-### Utils (`utils/`)
-
-**`file_io.py`** - Entrada/saída de arquivos
-```python
-from qbf_tabu_search.utils.file_io import QBFFileReader, SolutionFileHandler
-
-# Ler instância QBF
-size, matrix = QBFFileReader.read_qbf_instance("instances/qbf060")
-
-# Salvar solução
-SolutionFileHandler.write_solution_json("solution.json", solution)
-```
-
-**`validation.py`** - Validação
-```python
-from qbf_tabu_search.utils.validation import QBFValidator
-
-validator = QBFValidator()
-if validator.validate_file("instances/qbf060"):
-    print("Instância válida!")
-```
-
-**`analysis.py`** - Análise de instâncias
-```python
-from qbf_tabu_search.utils.analysis import QBFAnalyzer
-
-analyzer = QBFAnalyzer("instances/qbf060")
-analysis = analyzer.get_comprehensive_analysis()
-print(f"Estatísticas: {analysis['basic_stats']}")
-```
-
-## 🔧 Opções de Configuração
-
-### Parâmetros da Busca Tabu
-
-| Parâmetro | Tipo | Padrão | Descrição |
-|-----------|------|--------|-----------|
-| `tenure` | int | 20 | Tamanho da lista tabu |
-| `iterations` | int | 1000 | Número máximo de iterações |
-| `seed` | int | 0 | Semente aleatória |
-| `verbose` | bool | True | Saída detalhada |
-
-### Estratégias Avançadas
-
-| Estratégia | Descrição |
-|------------|-----------|
-| `best_improvement` | Usa melhor movimento vs. primeiro movimento |
-| `diversification` | Reinicialização para diversificação |
-| `intensification` | Foco na região da melhor solução |
-| `aspiration` | Critério de aspiração ativo |
-
-## 📊 Exemplos de Análise
-
-### Análise de Instância
-```python
-from qbf_tabu_search.utils.analysis import QBFAnalyzer
-
-analyzer = QBFAnalyzer("instances/qbf200")
-
-# Estatísticas básicas
-stats = analyzer.get_basic_statistics()
-print(f"Tamanho: {stats['size']}, Esparsidade: {stats['sparsity']:.1f}%")
-
-# Análise de paisagem
-landscape = analyzer.get_landscape_analysis()
-print(f"Rugosidade estimada: {landscape['ruggedness_estimate']:.3f}")
-```
-
-### Análise de Performance
-```python
-from qbf_tabu_search.utils.analysis import PerformanceAnalyzer
-
-analyzer = PerformanceAnalyzer()
-
-# Adicionar resultados de múltiplas execuções
-for result in experimental_results:
-    analyzer.add_result(result)
-
-# Analisar sensibilidade a parâmetros
-sensitivity = analyzer.analyze_parameter_sensitivity(results, 'tenure')
-print(f"Melhor tenure: {sensitivity['trends']['best_parameter_value']}")
-```
-
-## 🧪 Testes
-
+### Exemplo 2: Modo Debug
 ```bash
-# Executar todos os testes
-python -m pytest tests/
+$ python tabu_search.py 20 1000 instances/qbf060 debug
 
-# Testes específicos
-python -m pytest tests/test_core.py
-python -m pytest tests/test_qbf.py -v
-
-# Cobertura de testes
-python -m pytest tests/ --cov=qbf_tabu_search
+=== MODO DEBUG ===
+Arquivo: instances/qbf060
+Tenure: 20
+Iterations: 1000
+Tentando ler arquivo: instances/qbf060
+Arquivo lido: 61 linhas
+Dimensão da matriz: 60
+Matriz inicializada com zeros
+Linha 0: 60 elementos (esperado 60)
+...
+Matriz carregada com sucesso
+Arquivo lido com sucesso!
+=== Informações da Matriz ===
+Size: 60
+Matrix A is None: False
+Matriz 60x60 inicializada
+...
+maxVal = Solution: cost=[-156.0], size=[12], elements=[2, 4, 6, 8, 10, 12]
+Time = 2.341 seg
 ```
 
-## 📈 Experimentos
+## ⚙️ Parâmetros
 
-### Exemplo Completo de Experimento
-```python
-#!/usr/bin/env python3
-"""
-Exemplo de experimento comparativo
-"""
+| Parâmetro | Descrição | Valores Sugeridos |
+|-----------|-----------|-------------------|
+| `tenure` | Tamanho da lista tabu | 10-50 (tipicamente 20) |
+| `iterations` | Número de iterações | 500-5000 (tipicamente 1000) |
+| `filename` | Arquivo da instância | Caminho para arquivo QBF |
+| `debug` | Modo debug (opcional) | Adicione "debug" para informações detalhadas |
 
-from qbf_tabu_search.core.abstract_ts import TabuSearchConfig
-from qbf_tabu_search.problems.qbf.ts_qbf import TS_QBF, TS_QBF_Enhanced
-from qbf_tabu_search.utils.file_io import ResultsFileHandler
-import time
+### Diretrizes para Parâmetros:
+- **Tenure pequeno** (5-15): Mais diversificação, pode escapar de ótimos locais
+- **Tenure grande** (30-50): Mais intensificação, busca mais refinada
+- **Iterations**: Depende do tamanho da instância e tempo disponível
 
-def run_experiment():
-    instances = ["instances/qbf060", "instances/qbf200"]
-    tenures = [10, 20, 30]
-    algorithms = ['basic', 'enhanced']
-    
-    results = []
-    
-    for instance in instances:
-        for tenure in tenures:
-            for algorithm in algorithms:
-                for run in range(5):  # 5 execuções independentes
-                    
-                    config = TabuSearchConfig(
-                        tenure=tenure,
-                        iterations=1000,
-                        seed=run,
-                        verbose=False
-                    )
-                    
-                    start_time = time.time()
-                    
-                    if algorithm == 'basic':
-                        ts = TS_QBF(tenure, 1000, instance, run)
-                    else:
-                        ts = TS_QBF_Enhanced(config, instance)
-                    
-                    solution = ts.solve()
-                    
-                    results.append({
-                        'instance': instance,
-                        'algorithm': algorithm,
-                        'tenure': tenure,
-                        'run': run,
-                        'best_cost': solution.cost,
-                        'solution_size': solution.size(),
-                        'execution_time': time.time() - start_time
-                    })
-                    
-                    print(f"Completed: {instance} - {algorithm} - tenure={tenure} - run={run}")
-    
-    # Salvar resultados
-    ResultsFileHandler.write_results_csv("experiment_results.csv", results)
-    print(f"Experimento concluído! {len(results)} execuções salvas.")
+## 🏗️ Estrutura do Código
 
-if __name__ == "__main__":
-    run_experiment()
+```
+tabu_search.py
+├── Solution              # Classe para representar soluções
+├── QBF                   # Classe base para função objetivo
+│   ├── _read_input()     # Leitura do arquivo de instância
+│   ├── evaluate()        # Avaliação completa da solução
+│   ├── evaluate_*_cost() # Avaliações incrementais
+│   └── print_matrix_info() # Debug da matriz
+├── QBFInverse           # Versão inversa para minimização
+├── TabuSearch           # Algoritmo principal
+│   ├── constructive_heuristic() # Construção de solução inicial
+│   ├── neighborhood_move()      # Movimentos de vizinhança
+│   └── solve()                  # Loop principal
+└── main()               # Função principal
 ```
 
-## 🎯 Implementação das Estratégias Requeridas
+## 📈 Resultados Esperados
 
-O framework está preparado para implementar as estratégias tabu alternativas da Atividade 3:
+### Saída Típica:
+- **cost**: Valor da função objetivo (negativo devido à inversão)
+- **size**: Número de variáveis selecionadas (xᵢ = 1)
+- **elements**: Índices das variáveis selecionadas
+- **Time**: Tempo de execução em segundos
 
-### 1. Probabilistic TS
-```python
-class ProbabilisticTS(TS_QBF_Enhanced):
-    def neighborhood_move(self):
-        # Implementar seleção probabilística baseada em custos
-        # ao invés de seleção determinística do melhor movimento
-        pass
-```
-
-### 2. Intensification by Restart
-```python
-class IntensificationRestartTS(TS_QBF_Enhanced):
-    def solve(self):
-        # Implementar reinicialização periódica da melhor solução
-        # para intensificação da busca
-        pass
-```
-
-### 3. Intensification by Neighborhood
-```python
-class IntensificationNeighborhoodTS(TS_QBF_Enhanced):
-    def neighborhood_move(self):
-        # Implementar expansão da vizinhança em regiões promissoras
-        pass
-```
-
-### 4. Diversification by Restart
-```python
-class DiversificationRestartTS(TS_QBF_Enhanced):
-    def solve(self):
-        # Implementar reinicialização aleatória para diversificação
-        # quando detectar estagnação
-        pass
-```
-
-### 5. Strategic Oscillation
-```python
-class StrategicOscillationTS(TS_QBF_Enhanced):
-    def solve(self):
-        # Implementar oscilação entre diferentes estratégias
-        # (ex: alternar entre intensificação e diversificação)
-        pass
-```
-
-### 6. Surrogate Objective
-```python
-class SurrogateObjectiveTS(TS_QBF_Enhanced):
-    def __init__(self, config, filename):
-        super().__init__(config, filename)
-        # Implementar função objetivo substituta
-        self.surrogate_evaluator = self._create_surrogate()
-```
-
-## 📋 Checklist da Atividade 3
-
-### ✅ Requisitos Implementados
-
-- [x] **Framework Base**: Conversão completa Java → Python
-- [x] **Estrutura Modular**: Organização em módulos especializados
-- [x] **Busca Tabu Padrão**: Implementação TS_QBF funcional
-- [x] **Configuração Flexível**: TabuSearchConfig para parametrização
-- [x] **Interface CLI**: Script main.py com opções avançadas
-- [x] **Utilitários**: Validação, análise, I/O de arquivos
-- [x] **Documentação**: README completo e docstrings
-
-### 🔲 Requisitos a Implementar
-
-- [ ] **Estratégia Alternativa 1**: (escolher entre as 6 opções)
-- [ ] **Estratégia Alternativa 2**: (escolher entre as 6 opções)
-- [ ] **Experimentos**: Configurações de teste conforme especificado
-- [ ] **Relatório**: Documento de ~5 páginas com resultados
-
-### 📝 Configurações de Teste Sugeridas
-
-Conforme a atividade, implementar:
-
-1. **PADRÃO**: TS com first-improving, tenure=T1, estratégia padrão
-2. **PADRÃO+BEST**: TS PADRÃO com best-improving
-3. **PADRÃO+TENURE**: TS PADRÃO com tenure=T2
-4. **PADRÃO+METHOD1**: TS PADRÃO com estratégia alternativa 1
-5. **PADRÃO+METHOD2**: TS PADRÃO com estratégia alternativa 2
+### Interpretação:
+- Custos aparecem **negativos** devido ao uso de QBFInverse
+- Para obter o valor real da maximização: `valor_real = -cost`
+- Soluções maiores não necessariamente são melhores
 
 ## 🔍 Troubleshooting
 
-### Problemas Comuns
-
-**ImportError: No module named 'qbf_tabu_search'**
+### Problema: "Arquivo não encontrado"
+**Solução**: Verifique o caminho do arquivo
 ```bash
-# Certifique-se de estar no diretório correto
-cd qbf_tabu_search
-python -c "import sys; print(sys.path)"
-
-# Ou adicione ao PYTHONPATH
-export PYTHONPATH="${PYTHONPATH}:$(pwd)"
+# Windows
+python tabu_search.py 20 1000 instances\qbf200
+# Linux/Mac
+python tabu_search.py 20 1000 instances/qbf200
 ```
 
-**FileNotFoundError: Instância não encontrada**
+### Problema: "Matriz não inicializada"
+**Solução**: Use modo debug para diagnóstico
 ```bash
-# Verifique se as instâncias estão no lugar correto
-ls instances/
-# Ou use caminho absoluto
-python main.py --instance /path/to/qbf060
+python tabu_search.py 20 1000 arquivo debug
 ```
 
-**Erro de permissão ao salvar resultados**
-```bash
-# Crie diretórios necessários
-mkdir -p results solutions logs
-chmod 755 results solutions logs
-```
+### Problema: Arquivo com formato incorreto
+**Solução**: Verifique se:
+- Primeira linha contém apenas o número n
+- Cada linha i tem (n-i+1) elementos
+- Todos os valores são números
 
-### Validação da Instalação
-```python
-from qbf_tabu_search.utils.validation import validate_framework_installation
-
-validation_result = validate_framework_installation()
-if validation_result['valid']:
-    print("✅ Framework instalado corretamente!")
-else:
-    print("❌ Problemas na instalação:")
-    for error in validation_result['errors']:
-        print(f"  - {error}")
-```
+### Problema: Performance lenta
+**Soluções**:
+- Reduza o número de iterações
+- Use instâncias menores para teste
+- Verifique se não está em modo debug
 
 ## 🤝 Contribuição
 
-### Estrutura para Novas Funcionalidades
+Contribuições são bem-vindas! Para contribuir:
 
-1. **Novo Problema**: Adicionar em `problems/new_problem/`
-2. **Nova Metaheurística**: Estender `core/abstract_ts.py`
-3. **Novos Utilitários**: Adicionar em `utils/`
-4. **Novos Testes**: Adicionar em `tests/`
+1. Fork o projeto
+2. Crie uma branch para sua feature (`git checkout -b feature/AmazingFeature`)
+3. Commit suas mudanças (`git commit -m 'Add some AmazingFeature'`)
+4. Push para a branch (`git push origin feature/AmazingFeature`)
+5. Abra um Pull Request
 
-### Padrões de Código
-
-- **Docstrings**: Usar formato Google/NumPy
-- **Type Hints**: Usar tipagem quando possível
-- **Imports**: Seguir PEP 8 (stdlib, terceiros, locais)
-- **Nomenclatura**: snake_case para variáveis, PascalCase para classes
+### Áreas para Contribuição:
+- Implementação de estratégias tabu alternativas
+- Otimizações de performance
+- Melhorias na interface
+- Documentação adicional
+- Testes unitários
 
 ## 📚 Referências
 
-1. **Tabu Search**: Gendreau, M. & Potvin, J.-Y. (eds.), Handbook of Metaheuristics
-2. **QBF**: Kochenberger, et al. The unconstrained binary quadratic programming problem: a survey. J Comb Optim (2014)
-3. **Framework Original**: Implementação Java dos professores ccavellucci e fusberti
+1. **Gendreau, M., & Potvin, J. Y.** (2010). *Handbook of metaheuristics* (Vol. 2). Springer.
+2. **Kochenberger, G., et al.** (2014). The unconstrained binary quadratic programming problem: a survey. *Journal of Combinatorial Optimization*, 28(1), 58-81.
 
 ## 📄 Licença
 
-Este código é uma adaptação para fins educacionais da disciplina MO824/MC859 - Tópicos em Otimização Combinatória, UNICAMP.
-
-**Autores originais (Java)**: ccavellucci, fusberti  
-**Conversão Python**: Para atividade acadêmica  
-**Versão**: 1.0.0
+Este projeto está sob a licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
 
 ---
 
-**Nota**: Esta estrutura modular facilita a implementação das estratégias alternativas requeridas na Atividade 3. Cada estratégia pode ser implementada como uma subclasse de `TS_QBF_Enhanced`, mantendo o código organizado e reutilizável.
+## 📞 Contato
+
+Para dúvidas ou sugestões, abra uma [issue](https://github.com/seu-usuario/tabu-search-qbf/issues) no repositório.
+
+**Desenvolvido como parte do curso MO824/MC859 - Tópicos em Otimização Combinatória**

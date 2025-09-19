@@ -6,12 +6,13 @@ Implementação em Python do algoritmo **Tabu Search** para resolver o problema 
 
 ```
 src/
+├── core
+│	├── solution.py             # Classe Solution
+│	├── evaluator.py            # Interface para funções objetivo
+│	├── qbf.py                  # Implementação QBF e QBFInverse
+│	├── abstract_ts.py          # Framework genérico Tabu Search
+│	├── ts_qbf.py              # Tabu Search especializado para QBF
 ├── main.py                 # Interface de linha de comando
-├── solution.py             # Classe Solution
-├── evaluator.py            # Interface para funções objetivo
-├── qbf.py                  # Implementação QBF e QBFInverse
-├── abstract_ts.py          # Framework genérico Tabu Search
-├── ts_qbf.py              # Tabu Search especializado para QBF
 ├── test_basic.py          # Testes unitários
 └── quick_test.py          # Teste rápido de funcionamento
 ```

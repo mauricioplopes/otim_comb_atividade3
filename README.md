@@ -19,15 +19,6 @@ src/
 └── quick_test.py       # Teste rápido de funcionamento
 ```
 
-## Instalação
-
-Requer apenas **Python 3.7+** (sem dependências externas):
-
-```bash
-git clone https://github.com/seu-usuario/tabu-search-qbf.git
-cd tabu-search-qbf/src
-```
-
 ## Como Usar
 
 ### Execução Básica

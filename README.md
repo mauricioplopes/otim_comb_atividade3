@@ -13,7 +13,8 @@ src/
 │	├── abstract_ts.py  # Framework genérico Tabu Search
 │	└── ts_qbf.py       # Tabu Search especializado para QBF
 ├── instances			# Diretório das instâncias
-│	└── qbf				# Repositório das instâncias QBF
+│	├── qbf				# Repositório das instâncias QBF
+│	└── qbf_sc			# Instâncias do problema MAX SC QBF
 ├── main.py             # Interface de linha de comando
 ├── test_basic.py       # Testes unitários
 └── quick_test.py       # Teste rápido de funcionamento

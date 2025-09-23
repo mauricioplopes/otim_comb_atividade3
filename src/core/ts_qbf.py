@@ -93,7 +93,7 @@ class TabuSearchQBF(AbstractTabuSearch):
             Solution: Solução vazia com custo 0.0
         """
         solution = Solution()
-        solution.cost = 0.0
+        solution.cost = self.obj_function.evaluate(solution)
         return solution
     
     def neighborhood_move(self) -> Optional[Solution]:

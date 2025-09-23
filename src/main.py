@@ -10,7 +10,7 @@ import time
 import traceback
 from typing import Optional
 
-from core.ts_qbf import TabuSearchQBF
+from core.ts_qbf_sc import TabuSearchQBFSc
 
 
 def print_usage():
@@ -132,9 +132,9 @@ def run_tabu_search(params):
             print("Modo DEBUG ativado")
         print()
     
-    # Cria instância do Tabu Search
+    # Cria instância do Tabu Search com set-cover
     try:
-        ts = TabuSearchQBF(
+        ts = TabuSearchQBFSc(
             tenure=params['tenure'],
             iterations=params['iterations'],
             filename=params['filename'],

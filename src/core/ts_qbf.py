@@ -20,7 +20,7 @@ class TabuSearchQBF(AbstractTabuSearch):
     Usa QBFInverse pois o TS está configurado para minimização.
     """
     
-    def __init__(self, tenure: int, iterations: int, filename: str, random_seed: int = 0):
+    def __init__(self, tenure: int, iterations: int, filename: str, random_seed: int = 0, qbf_inverse: Optional[QBFInverse] = None):
         """
         Inicializa o Tabu Search para QBF.
         
@@ -31,7 +31,7 @@ class TabuSearchQBF(AbstractTabuSearch):
             random_seed (int): Seed para números aleatórios
         """
         # Cria função objetivo QBF inversa
-        qbf_inverse = QBFInverse(filename)
+        qbf_inverse = qbf_inverse or QBFInverse(filename)
         
         # Inicializa classe pai
         super().__init__(qbf_inverse, tenure, iterations, random_seed)
@@ -93,7 +93,7 @@ class TabuSearchQBF(AbstractTabuSearch):
             Solution: Solução vazia com custo 0.0
         """
         solution = Solution()
-        solution.cost = 0.0
+        solution.cost = self.obj_function.evaluate(solution)
         return solution
     
     def neighborhood_move(self) -> Optional[Solution]:

@@ -1,4 +1,5 @@
-from qbf import QBFInverse
+from core.qbf import QBFInverse
+from typing import List
 
 class QBFSCInverse(QBFInverse):
     def __init__(self, filename: str):
@@ -96,3 +97,30 @@ class QBFSCInverse(QBFInverse):
             print(f"ERRO ao ler arquivo {filename}: {e}")
             self.A = [[0.0]]
             return 1
+        
+    def get_variables_that_can_be_set_to_zero(self) -> List[int]:
+        # Conjuntos de 0 ate N-1
+        # Isso irá listar todos os conjuntos que ainda estão sendo usados para cobrir os elementos
+        set_indexes_enabled = [i for i in range(self.size) if self.variables[i] == 1.0]
+
+        # Contar quantas vezes cada elemento (variável) é coberto
+        element_coverage_count = {}
+        for set_index in set_indexes_enabled:
+            for elem in self.sets[set_index]:
+                element_coverage_count[elem] = element_coverage_count.get(elem, 0) + 1
+
+        variables_that_can_be_set_to_zero = []
+        for i in range(self.size):
+            if self.variables[i] == 1.0:
+                can_be_set_to_zero = True
+                for elem in self.sets[i]:
+                    # Se definirmos a variável i como 0, desabilitamos um conjunto
+                    # Se houver elementos no conjunto que são cobertos apenas uma vez, eles não serão mais cobertos
+                    # Portanto, não podemos definir essa variável como 0
+                    if element_coverage_count.get(elem, 0) == 1:
+                        can_be_set_to_zero = False
+                        break
+                if can_be_set_to_zero:
+                    variables_that_can_be_set_to_zero.append(i)
+
+        return variables_that_can_be_set_to_zero

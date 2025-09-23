@@ -25,7 +25,7 @@ class QBF(Evaluator):
         """
         self.A = None
         self.size = self._read_input(filename)
-        self.variables = [0.0] * self.size
+        self.variables = [1.0] * self.size
     
     def _read_input(self, filename: str) -> int:
         """
@@ -102,12 +102,14 @@ class QBF(Evaluator):
             return 1
     
     def reset_variables(self):
-        """Reset das variáveis para zero."""
-        self.variables = [0.0] * self.size
+        """Reset das variáveis para um."""
+        self.variables = [1.0] * self.size
     
     def set_variables(self, solution: Solution):
         """
-        Define as variáveis baseado na solução.
+        Define as variáveis baseado na solução. Um elemento estar contido em solution significa que a variável deve ser definida como 0.
+        Isso pode parecer contra-intuitiva, mas a ideia é que uma solução vazia representa uma solução em que todos os conjuntos são selecionados (variáveis = 1).
+        O contrário (todos as variáveis = 0) seria uma solução inválida para QBF-SC.
         
         Args:
             solution (Solution): Solução atual
@@ -116,7 +118,7 @@ class QBF(Evaluator):
         if solution:
             for elem in solution:
                 if 0 <= elem < self.size:
-                    self.variables[elem] = 1.0
+                    self.variables[elem] = 0.0
     
     def get_domain_size(self) -> int:
         """
@@ -162,7 +164,7 @@ class QBF(Evaluator):
     
     def evaluate_insertion_cost(self, elem: int, solution: Solution) -> float:
         """
-        Avalia o custo de inserir um elemento.
+        Avalia o custo de inserir um elemento na solução (o que significa definir a variável como 0).
         
         Args:
             elem (int): Elemento a ser inserido
@@ -172,7 +174,7 @@ class QBF(Evaluator):
             float: Custo de inserção
         """
         self.set_variables(solution)
-        return self._evaluate_insertion_qbf(elem)
+        return self._evaluate_removal_qbf(elem)
     
     def _evaluate_insertion_qbf(self, i: int) -> float:
         """
@@ -190,7 +192,7 @@ class QBF(Evaluator):
     
     def evaluate_removal_cost(self, elem: int, solution: Solution) -> float:
         """
-        Avalia o custo de remover um elemento.
+        Avalia o custo de remover um elemento (o que significa definir a variável como 1).
         
         Args:
             elem (int): Elemento a ser removido
@@ -200,7 +202,7 @@ class QBF(Evaluator):
             float: Custo de remoção
         """
         self.set_variables(solution)
-        return self._evaluate_removal_qbf(elem)
+        return self._evaluate_insertion_qbf(elem)
     
     def _evaluate_removal_qbf(self, i: int) -> float:
         """
@@ -218,7 +220,7 @@ class QBF(Evaluator):
     
     def evaluate_exchange_cost(self, elem_in: int, elem_out: int, solution: Solution) -> float:
         """
-        Avalia o custo de trocar dois elementos.
+        Avalia o custo de trocar dois elementos. O elemento a entrar é definido como 0 e o elemento a sair como 1.
         
         Args:
             elem_in (int): Elemento a entrar
@@ -229,7 +231,7 @@ class QBF(Evaluator):
             float: Custo de troca
         """
         self.set_variables(solution)
-        return self._evaluate_exchange_qbf(elem_in, elem_out)
+        return self._evaluate_exchange_qbf(elem_out, elem_in)
     
     def _evaluate_exchange_qbf(self, elem_in: int, elem_out: int) -> float:
         """

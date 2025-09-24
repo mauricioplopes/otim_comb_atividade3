@@ -1,8 +1,9 @@
-
+#!/usr/bin/env python3
 """
 main.py
 
-Programa principal para executar o Tabu Search no problema QBF.
+Programa principal para executar o Tabu Search no problema MAX-SC-QBF.
+Suporta diferentes métodos de busca: best-improving (padrão) e first-improving.
 """
 
 import sys
@@ -11,6 +12,7 @@ import traceback
 from typing import Optional
 
 from core.ts_qbf_sc import TabuSearchQBFSc
+from core.ts_qbf_sc_first_improving import TabuSearchQBFScFirstImproving
 
 
 def print_usage():
@@ -23,14 +25,21 @@ def print_usage():
     print("  filename    : Arquivo da instância QBF")
     print()
     print("Opções:")
+    print("  method=X    : Método de busca (best-improving | first-improving)")
+    print("                Padrão: best-improving")
     print("  debug       : Ativa modo debug detalhado")
     print("  quiet       : Desativa saídas verbosas")
     print("  seed=N      : Define seed aleatória (ex: seed=42)")
     print()
+    print("Métodos disponíveis:")
+    print("  best-improving  : Explora toda vizinhança, escolhe melhor movimento")
+    print("  first-improving : Para no primeiro movimento que melhora a solução")
+    print()
     print("Exemplos:")
     print("  python main.py 20 1000 instances/qbf200")
-    print("  python main.py 20 1000 instances/qbf200 debug")
-    print("  python main.py 20 1000 instances/qbf200 quiet seed=123")
+    print("  python main.py 20 1000 instances/qbf200 method=first-improving")
+    print("  python main.py 20 1000 instances/qbf200 method=best-improving debug")
+    print("  python main.py 20 1000 instances/qbf200 method=first-improving seed=123")
 
 
 def parse_arguments(args):
@@ -51,6 +60,7 @@ def parse_arguments(args):
             'tenure': int(args[1]),
             'iterations': int(args[2]),
             'filename': args[3],
+            'method': 'best-improving',  # Padrão
             'debug': False,
             'quiet': False,
             'seed': 0
@@ -69,6 +79,16 @@ def parse_arguments(args):
                     parsed['seed'] = int(arg_lower.split('=')[1])
                 except (ValueError, IndexError):
                     print(f"AVISO: Seed inválida '{arg}', usando seed=0")
+            elif arg_lower.startswith('method='):
+                try:
+                    method = arg_lower.split('=')[1]
+                    if method in ['best-improving', 'first-improving']:
+                        parsed['method'] = method
+                    else:
+                        print(f"AVISO: Método inválido '{method}', usando best-improving")
+                        print("Métodos válidos: best-improving, first-improving")
+                except (ValueError, IndexError):
+                    print(f"AVISO: Formato de método inválido '{arg}', usando best-improving")
             else:
                 print(f"AVISO: Opção desconhecida '{arg}' ignorada")
         
@@ -84,32 +104,52 @@ def validate_parameters(params):
     Valida os parâmetros fornecidos.
     
     Args:
-        params (dict): Parâmetros a serem validados
+        params (dict): Dicionário de parâmetros
         
     Returns:
-        bool: True se válidos, False caso contrário
+        bool: True se parâmetros são válidos
     """
-    errors = []
-    
     if params['tenure'] <= 0:
-        errors.append("Tenure deve ser maior que zero")
-    
-    if params['iterations'] <= 0:
-        errors.append("Iterations deve ser maior que zero")
-    
-    if params['tenure'] > 100:
-        print(f"AVISO: Tenure muito alto ({params['tenure']}), pode impactar performance")
-    
-    if params['iterations'] > 10000:
-        print(f"AVISO: Muitas iterações ({params['iterations']}), execução pode ser lenta")
-    
-    if errors:
-        print("Erros de validação:")
-        for error in errors:
-            print(f"  - {error}")
+        print("ERRO: Tenure deve ser positivo")
         return False
     
+    if params['iterations'] <= 0:
+        print("ERRO: Número de iterações deve ser positivo")
+        return False
+    
+    if params['tenure'] > 1000:
+        print("AVISO: Tenure muito alto pode afetar performance")
+    
+    if params['iterations'] > 100000:
+        print("AVISO: Número de iterações muito alto pode demorar muito")
+    
     return True
+
+
+def create_tabu_search(params):
+    """
+    Cria a instância apropriada do Tabu Search baseada no método escolhido.
+    
+    Args:
+        params (dict): Parâmetros de configuração
+        
+    Returns:
+        TabuSearchQBFSc: Instância do solver apropriado
+    """
+    if params['method'] == 'first-improving':
+        return TabuSearchQBFScFirstImproving(
+            params['tenure'], 
+            params['iterations'], 
+            params['filename'], 
+            params['seed']
+        )
+    else:  # best-improving (padrão)
+        return TabuSearchQBFSc(
+            params['tenure'], 
+            params['iterations'], 
+            params['filename'], 
+            params['seed']
+        )
 
 
 def run_tabu_search(params):
@@ -117,79 +157,62 @@ def run_tabu_search(params):
     Executa o Tabu Search com os parâmetros fornecidos.
     
     Args:
-        params (dict): Parâmetros de execução
+        params (dict): Parâmetros de configuração
         
     Returns:
         dict: Resultados da execução
     """
-    if not params['quiet']:
-        print("=== TABU SEARCH PARA QBF ===")
-        print(f"Arquivo: {params['filename']}")
-        print(f"Tenure: {params['tenure']}")
-        print(f"Iterations: {params['iterations']}")
-        print(f"Seed: {params['seed']}")
-        if params['debug']:
-            print("Modo DEBUG ativado")
-        print()
-    
-    # Cria instância do Tabu Search com set-cover
     try:
-        ts = TabuSearchQBFSc(
-            tenure=params['tenure'],
-            iterations=params['iterations'],
-            filename=params['filename'],
-            random_seed=params['seed']
-        )
+        # Cria solver apropriado
+        ts = create_tabu_search(params)
         
         # Configura verbosidade
         ts.set_verbose(not params['quiet'])
         
-        if params['debug'] and not params['quiet']:
-            print("Instância carregada com sucesso!")
-            ts.print_debug_info()
-            print("Iniciando Tabu Search...\n")
+        if not params['quiet']:
+            print("="*60)
+            print("TABU SEARCH - MAX-SC-QBF")
+            print("="*60)
+            print(f"Instância: {params['filename']}")
+            print(f"Tenure: {params['tenure']}")
+            print(f"Iterações: {params['iterations']}")
+            print(f"Método: {params['method'].upper()}")
+            print(f"Seed: {params['seed']}")
+            print("-"*60)
         
-    except Exception as e:
-        return {
-            'success': False,
-            'error': f"Erro ao carregar instância: {e}",
-            'traceback': traceback.format_exc() if params['debug'] else None
-        }
-    
-    # Executa o algoritmo
-    try:
+        # Executa algoritmo
         start_time = time.time()
-        
-        # Aumenta limite de recursão se necessário
-        import sys
-        original_limit = sys.getrecursionlimit()
-        if original_limit < 5000:
-            sys.setrecursionlimit(5000)
-        
-        try:
-            best_solution = ts.solve()
-        finally:
-            # Restaura limite original
-            sys.setrecursionlimit(original_limit)
-        
+        best_solution = ts.solve()
         end_time = time.time()
         execution_time = end_time - start_time
         
-        # Coleta informações dos resultados
-        quality_info = ts.get_solution_quality_info()
+        # Calcula valor real da QBF (negativo da QBF inversa)
+        real_qbf_value = -best_solution.cost
         
         return {
             'success': True,
             'best_solution': best_solution,
             'execution_time': execution_time,
-            'quality_info': quality_info,
-            'tabu_search': ts
+            'method': params['method'],
+            'tabu_search': ts,
+            'quality_info': {
+                'best_real_value': real_qbf_value,
+                'iterations': params['iterations'],
+                'domain_size': ts.obj_function.get_domain_size() if hasattr(ts.obj_function, 'get_domain_size') else len(ts.candidate_list)
+            }
         }
         
-    except RecursionError as e:
+    except FileNotFoundError:
         return {
             'success': False,
-            'error': f"Erro de recursão: {e}. Tente reduzir o número de iterações ou o tamanho da instância.",
+            'error': f"Arquivo '{params['filename']}' não encontrado",
+            'traceback': traceback.format_exc() if params['debug'] else None
+        }
+    except MemoryError:
+        return {
+            'success': False,
+            'error': "Erro de memória - instância muito grande. " +
+                    "Tente reduzir o número de iterações ou o tamanho da instância.",
             'traceback': traceback.format_exc() if params['debug'] else None
         }
     except Exception as e:
@@ -219,12 +242,14 @@ def print_results(results, params):
     best_sol = results['best_solution']
     exec_time = results['execution_time']
     quality = results['quality_info']
+    method = results['method']
     
     if not params['quiet']:
-        print("\n" + "="*50)
+        print("\n" + "="*60)
         print("RESULTADOS FINAIS")
-        print("="*50)
+        print("="*60)
         
+        print(f"Método utilizado: {method.upper()}")
         print(f"Melhor solução encontrada:")
         print(f"  Custo (invertido): {best_sol.cost:.6f}")
         print(f"  Valor real QBF: {quality['best_real_value']:.6f}")
@@ -240,12 +265,17 @@ def print_results(results, params):
         if params['debug']:
             print(f"\nInformações detalhadas:")
             ts = results['tabu_search']
-            ts.print_debug_info()
+            if hasattr(ts, 'print_debug_info'):
+                ts.print_debug_info()
+        
+        print("="*60)
     
     else:
         # Modo quiet - apenas resultado essencial
-        print(f"maxVal = {best_sol}")
-        print(f"Time = {exec_time:.3f} seg")
+        print(f"Method: {method}")
+        print(f"Value: {quality['best_real_value']:.6f}")
+        print(f"Time: {exec_time:.3f}s")
+        print(f"Solution: {best_sol.get_elements()}")
 
 
 def main():

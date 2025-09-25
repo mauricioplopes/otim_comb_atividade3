@@ -13,6 +13,8 @@ from typing import Optional
 
 from core.ts_qbf_sc import TabuSearchQBFSc
 from core.ts_qbf_sc_first_improving import TabuSearchQBFScFirstImproving
+from core.ts_qbf_sc_probabilistic import TabuSearchQBFScProbabilistic
+from core.ts_qbf_sc_intensification import TabuSearchQBFScIntensification
 
 
 def print_usage():
@@ -25,8 +27,12 @@ def print_usage():
     print("  filename    : Arquivo da instância QBF")
     print()
     print("Opções:")
-    print("  method=X    : Método de busca (best-improving | first-improving)")
+    print("  method=X    : Método de busca")
+    print("                best-improving | first-improving | probabilistic | intensification")
     print("                Padrão: best-improving")
+    print("  alpha=X     : Parâmetro alpha para Probabilistic TS (padrão: 2.0)")
+    print("  elite=X     : Tamanho da elite list para Intensification (padrão: 5)")
+    print("  period=X    : Período de intensificação (padrão: 50)")
     print("  debug       : Ativa modo debug detalhado")
     print("  quiet       : Desativa saídas verbosas")
     print("  seed=N      : Define seed aleatória (ex: seed=42)")
@@ -34,12 +40,22 @@ def print_usage():
     print("Métodos disponíveis:")
     print("  best-improving  : Explora toda vizinhança, escolhe melhor movimento")
     print("  first-improving : Para no primeiro movimento que melhora a solução")
+    print("  probabilistic   : First-improving + aceitação probabilística de movimentos tabu")
+    print("  intensification : First-improving + intensificação em regiões promissoras")
+    print()
+    print("Configurações da Atividade 3:")
+    print("  1. PADRÃO:        method=first-improving")
+    print("  2. PADRÃO+BEST:   method=best-improving")
+    print("  3. PADRÃO+TENURE: method=first-improving (com tenure diferente)")
+    print("  4. PADRÃO+METHOD1: method=probabilistic")
+    print("  5. PADRÃO+METHOD2: method=intensification")
     print()
     print("Exemplos:")
     print("  python main.py 20 1000 instances/qbf200")
     print("  python main.py 20 1000 instances/qbf200 method=first-improving")
-    print("  python main.py 20 1000 instances/qbf200 method=best-improving debug")
-    print("  python main.py 20 1000 instances/qbf200 method=first-improving seed=123")
+    print("  python main.py 20 1000 instances/qbf200 method=probabilistic alpha=1.5")
+    print("  python main.py 20 1000 instances/qbf200 method=intensification elite=8 period=30")
+    print("  python main.py 50 1000 instances/qbf200 method=first-improving  # tenure diferente")
 
 
 def parse_arguments(args):
@@ -61,6 +77,9 @@ def parse_arguments(args):
             'iterations': int(args[2]),
             'filename': args[3],
             'method': 'best-improving',  # Padrão
+            'alpha': 2.0,  # Parâmetro para Probabilistic TS
+            'elite_size': 5,  # Parâmetro para Intensification
+            'intensification_period': 50,  # Parâmetro para Intensification
             'debug': False,
             'quiet': False,
             'seed': 0
@@ -82,13 +101,37 @@ def parse_arguments(args):
             elif arg_lower.startswith('method='):
                 try:
                     method = arg_lower.split('=')[1]
-                    if method in ['best-improving', 'first-improving']:
+                    if method in ['best-improving', 'first-improving', 'probabilistic', 'intensification']:
                         parsed['method'] = method
                     else:
                         print(f"AVISO: Método inválido '{method}', usando best-improving")
-                        print("Métodos válidos: best-improving, first-improving")
+                        print("Métodos válidos: best-improving, first-improving, probabilistic, intensification")
                 except (ValueError, IndexError):
                     print(f"AVISO: Formato de método inválido '{arg}', usando best-improving")
+            elif arg_lower.startswith('alpha='):
+                try:
+                    parsed['alpha'] = float(arg_lower.split('=')[1])
+                    if parsed['alpha'] <= 0:
+                        print(f"AVISO: Alpha deve ser positivo, usando 2.0")
+                        parsed['alpha'] = 2.0
+                except (ValueError, IndexError):
+                    print(f"AVISO: Valor alpha inválido '{arg}', usando 2.0")
+            elif arg_lower.startswith('elite='):
+                try:
+                    parsed['elite_size'] = int(arg_lower.split('=')[1])
+                    if parsed['elite_size'] <= 0:
+                        print(f"AVISO: Elite size deve ser positivo, usando 5")
+                        parsed['elite_size'] = 5
+                except (ValueError, IndexError):
+                    print(f"AVISO: Valor elite inválido '{arg}', usando 5")
+            elif arg_lower.startswith('period='):
+                try:
+                    parsed['intensification_period'] = int(arg_lower.split('=')[1])
+                    if parsed['intensification_period'] <= 0:
+                        print(f"AVISO: Período deve ser positivo, usando 50")
+                        parsed['intensification_period'] = 50
+                except (ValueError, IndexError):
+                    print(f"AVISO: Valor period inválido '{arg}', usando 50")(f"AVISO: Valor alpha inválido '{arg}', usando 2.0")
             else:
                 print(f"AVISO: Opção desconhecida '{arg}' ignorada")
         
@@ -143,6 +186,23 @@ def create_tabu_search(params):
             params['filename'], 
             params['seed']
         )
+    elif params['method'] == 'probabilistic':
+        return TabuSearchQBFScProbabilistic(
+            params['tenure'], 
+            params['iterations'], 
+            params['filename'], 
+            params['seed'],
+            params['alpha']
+        )
+    elif params['method'] == 'intensification':
+        return TabuSearchQBFScIntensification(
+            params['tenure'], 
+            params['iterations'], 
+            params['filename'], 
+            params['seed'],
+            params['elite_size'],
+            params['intensification_period']
+        )
     else:  # best-improving (padrão)
         return TabuSearchQBFSc(
             params['tenure'], 
@@ -178,6 +238,11 @@ def run_tabu_search(params):
             print(f"Iterações: {params['iterations']}")
             print(f"Método: {params['method'].upper()}")
             print(f"Seed: {params['seed']}")
+            if params['method'] == 'probabilistic':
+                print(f"Alpha (Probabilistic): {params['alpha']}")
+            elif params['method'] == 'intensification':
+                print(f"Elite Size (Intensification): {params['elite_size']}")
+                print(f"Período (Intensification): {params['intensification_period']}")
             print("-"*60)
         
         # Executa algoritmo
@@ -267,6 +332,10 @@ def print_results(results, params):
             ts = results['tabu_search']
             if hasattr(ts, 'print_debug_info'):
                 ts.print_debug_info()
+            if hasattr(ts, 'print_probabilistic_info'):
+                ts.print_probabilistic_info()
+            if hasattr(ts, 'print_intensification_info'):
+                ts.print_intensification_info()
         
         print("="*60)
     

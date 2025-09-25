@@ -47,7 +47,7 @@ python main.py <tenure> <iterations> <filename> [options]
   - `best-improving`: Item 2 - Best-improving padrão
   - `first-improving`: Items 1,3 - First-improving padrão  
   - `probabilistic`: Item 4 - Probabilistic TS (METHOD1)
-  - `intensification`: Item 5 - Intensification by Neighborhood (METHOD2) ✨
+  - `intensification`: Item 5 - Intensification by Neighborhood (METHOD2)
 - `alpha=X`: Parâmetro alpha para Probabilistic TS (padrão: 2.0)
 - `elite=X`: Tamanho da elite list para Intensification (padrão: 5)
 - `period=X`: Período de intensificação em iterações (padrão: 50)
@@ -80,7 +80,7 @@ python main.py 20 1000 instances/qbf_sc/instance-01.txt method=probabilistic
 python main.py 20 1000 instances/qbf_sc/instance-01.txt method=probabilistic alpha=1.5
 ```
 
-### Item 5: PADRÃO+METHOD2 (Intensification by Neighborhood + T1) ✨
+### Item 5: PADRÃO+METHOD2 (Intensification by Neighborhood + T1)
 ```bash
 python main.py 20 1000 instances/qbf_sc/instance-01.txt method=intensification
 

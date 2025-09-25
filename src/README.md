@@ -59,33 +59,33 @@ python main.py <tenure> <iterations> <filename> [options]
 
 ### Item 1: PADRÃO (First-Improving + T1)
 ```bash
-python main.py 20 1000 instances/qbf_sc/instance01.txt method=first-improving
+python main.py 20 1000 instances/qbf_sc/instance-01.txt method=first-improving
 ```
 
 ### Item 2: PADRÃO+BEST (Best-Improving + T1)
 ```bash
-python main.py 20 1000 instances/qbf_sc/instance01.txt method=best-improving
+python main.py 20 1000 instances/qbf_sc/instance-01.txt method=best-improving
 ```
 
 ### Item 3: PADRÃO+TENURE (First-Improving + T2)
 ```bash
-python main.py 50 1000 instances/qbf_sc/instance01.txt method=first-improving
+python main.py 50 1000 instances/qbf_sc/instance-01.txt method=first-improving
 ```
 
 ### Item 4: PADRÃO+METHOD1 (Probabilistic TS + T1)
 ```bash
-python main.py 20 1000 instances/qbf_sc/instance01.txt method=probabilistic
+python main.py 20 1000 instances/qbf_sc/instance-01.txt method=probabilistic
 
 # Com alpha customizado
-python main.py 20 1000 instances/qbf_sc/instance01.txt method=probabilistic alpha=1.5
+python main.py 20 1000 instances/qbf_sc/instance-01.txt method=probabilistic alpha=1.5
 ```
 
 ### Item 5: PADRÃO+METHOD2 (Intensification by Neighborhood + T1) ✨
 ```bash
-python main.py 20 1000 instances/qbf_sc/instance01.txt method=intensification
+python main.py 20 1000 instances/qbf_sc/instance-01.txt method=intensification
 
 # Com parâmetros customizados
-python main.py 20 1000 instances/qbf_sc/instance01.txt method=intensification elite=8 period=30
+python main.py 20 1000 instances/qbf_sc/instance-01.txt method=intensification elite=8 period=30
 ```
 
 
@@ -95,6 +95,6 @@ python main.py 20 1000 instances/qbf_sc/instance01.txt method=intensification el
 |------|------|-------------|--------|----------------|---------|
 | **1** | PADRÃO | First-improving | T1 | Padrão | `method=first-improving` |
 | **2** | PADRÃO+BEST | Best-improving | T1 | Padrão | `method=best-improving` |
-| **3** | PADRÃO+TENURE | First-improving | T2 | Padrão | tenure > T1 |
+| **3** | PADRÃO+TENURE | First-improving | T2 | Padrão | T2 diferente de T1 |
 | **4** | PADRÃO+METHOD1 | First-improving | T1 | **Probabilistic** | `method=probabilistic` |
 | **5** | PADRÃO+METHOD2 | First-improving | T1 | **Intensification** | `method=intensification` |
